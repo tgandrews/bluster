@@ -8,30 +8,30 @@ use nickel::{Nickel, HttpRouter, JsonBody};
 use self::api::*;
 use self::api::models::*;
 use self::diesel::prelude::*;
-use rustc_serialize::json::{self, ToJson, Json};
+use rustc_serialize::json::{self};
 
 fn main() {
     use api::schema::posts::dsl::*;
 
-    // let mut server = Nickel::new();
+    let mut server = Nickel::new();
 
-    let connection = establish_connection();
-    println!("Connection made!");
+    server.post("/post", middleware! { |req, res|
+        let post = req.json_as::<Post>().unwrap();
+        println!("Post {}", post.title);
+    });
 
-    // server.post("/post", middleware! { |req, res|
-    //     let post = req.json_as::<Post>().unwrap();
-    //     println!("Post {}", post.title);
-    // });
+    server.get("/post", middleware! { |req, res|
+        let connection = establish_connection();
+        println!("Connection made!");
+        let results = posts
+            .limit(5)
+            .load::<Post>(&connection)
+            .expect("Error loading posts");
+        let first_post = results.first().unwrap();
+        let json_response = json::encode(first_post).unwrap();
+        println!("Posts {}", json_response);
+        return res.send(json_response);
+    });
 
-    // server.get("/post", middleware! { |req, res|
-    let results = posts
-        .limit(5)
-        .load::<Post>(&connection)
-        .expect("Error loading posts");
-    let first_post = results.first().unwrap();
-
-    println!("Posts {}", json::encode(first_post).unwrap());
-    // });
-
-    // server.listen("127.0.0.1:6767");
+    server.listen("127.0.0.1:6767");
 }
