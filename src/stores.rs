@@ -1,18 +1,24 @@
 use diesel::prelude::*;
+use diesel::pg::PgConnection;
+
 use models::Post;
 use schema::posts::dsl::*;
 use db::establish_connection;
 
 pub struct PostStore {
+    connection: PgConnection
 }
 
 impl PostStore {
-    pub fn get_all() -> Option<Vec<Post>> {
-        let connection = establish_connection();
-        let result = posts.load::<Post>(&connection);
+    pub fn new() -> PostStore {
+        PostStore{connection: establish_connection()}
+    }
+
+    pub fn get_all(&self) -> Option<Vec<Post>> {
+        let result = posts.load::<Post>(&self.connection);
         match result {
             Result::Ok(p) => Some(p),
-            Result::Err(err) => None
+            Result::Err(_) => None
         }
     }
 }

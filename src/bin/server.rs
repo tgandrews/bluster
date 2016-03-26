@@ -17,8 +17,9 @@ fn main() {
         println!("Post {}", post.title);
     });
 
-    server.get("/posts", middleware! { |req, res|
-        let results = PostStore::get_all();
+    server.get("/posts", middleware! { |_, res|
+        let post_store = PostStore::new();
+        let results = post_store.get_all();
 
         let json_response = results
             .iter()
