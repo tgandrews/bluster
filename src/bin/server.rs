@@ -5,14 +5,11 @@ extern crate diesel;
 extern crate rustc_serialize;
 
 use nickel::{Nickel, HttpRouter, JsonBody};
-use self::api::*;
 use self::api::models::*;
-use self::diesel::prelude::*;
+use self::api::stores::*;
 use rustc_serialize::json::{self};
 
 fn main() {
-    use api::schema::posts::dsl::*;
-
     let mut server = Nickel::new();
 
     server.post("/posts", middleware! { |req, res|
@@ -21,12 +18,8 @@ fn main() {
     });
 
     server.get("/posts", middleware! { |req, res|
-        let connection = establish_connection();
-        println!("Connection made!");
-        let results = posts
-            .limit(5)
-            .load::<Post>(&connection)
-            .expect("Error loading posts");
+        let results = PostStore::get_all();
+
         let json_response = results
             .iter()
             .fold(String::new(), |cur, post| {
