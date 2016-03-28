@@ -3,17 +3,22 @@ var http = require('http');
 var opts = {
   host: 'localhost',
   port: 6767,
-  method: 'POST',
-  path: '/post',
+  method: 'GET',
+  path: '/posts/1',
   headers: {
     'Content-Type': 'application/json'
   }
 }
 
-var req = http.request(opts);
-req.write(JSON.stringify({
-  id: 1,
-  title: 'Hello Elli',
-  contents: 'Content',
-}));
+var timer;
+var req = http.request(opts, (res) => {
+  res.setEncoding('utf8');
+  var buffer = '';
+  res.on('data', (chunk) => {
+    buffer += chunk;
+  });
+  res.on('end', () => {
+    console.log(buffer);
+  });
+});
 req.end();
