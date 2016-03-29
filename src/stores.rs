@@ -38,10 +38,15 @@ impl PostStore {
         }
     }
 
-    // pub fn insert(&self, new_post: &NewPost) -> Result<Post> {
-    //     let result = diesel::insert(&new_post)
-    //         .into(posts::table)
-    //         .get_result(&self.connection);
-    //
-    // }
+    pub fn create(&self, new_post: &NewPost) -> Result<Post, String> {
+        use schema::posts;
+
+        let result = diesel::insert(new_post)
+            .into(posts::table)
+            .get_result(&self.connection);
+        match result {
+            Result::Ok(p) => Ok(p),
+            Result::Err(e) => Err("Error inserting data".to_string())
+        }
+    }
 }

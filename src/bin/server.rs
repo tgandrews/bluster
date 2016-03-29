@@ -10,18 +10,27 @@ use self::api::models::*;
 use self::api::stores::*;
 use rustc_serialize::json::{self};
 use std::str::FromStr;
+use nickel::extensions::Redirect;
 
 fn main() {
     let mut server = Nickel::new();
 
-    server.post("/posts", middleware! { |req, res|
-        let post = req.json_as::<Post>().unwrap();
-        println!("Post {}", post.title);
+    server.post("/posts", middleware! { |req, mut res|
+        let post = req.json_as::<NewPost>().unwrap();
+        let post_store = PostStore::new();
+        match post_store.create(&post) {
+            Result::Ok(post) => {
+                return res.redirect(format!("/posts/{}", post.id))
+            },
+            Result::Err(err) => {
+                res.set(StatusCode::InternalServerError);
+                err
+            }
+        }
     });
 
     server.get("/posts/:post_id", middleware! { |req, mut res|
         let post_id = i32::from_str(req.param("post_id").unwrap()).unwrap();
-        println!("Looking for post id: {}", post_id);
         let post_store = PostStore::new();
         let post = post_store.get_by_id(post_id);
         match post {
