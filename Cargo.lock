@@ -8,6 +8,7 @@ dependencies = [
  "dotenv_macros 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "nickel 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.18 (registry+https://github.com/rust-lang/crates.io-index)",
+ "time 0.1.34 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

@@ -6,14 +6,15 @@ use models::Post;
 use models::NewPost;
 use schema::posts::dsl::*;
 use db::establish_connection;
+use std::collections::HashMap;
 
 pub struct PostStore {
     connection: PgConnection
 }
 
 impl PostStore {
-    pub fn new() -> PostStore {
-        PostStore{connection: establish_connection()}
+    pub fn new(config: &HashMap<String, String>) -> PostStore {
+        PostStore{connection: establish_connection(config)}
     }
 
     pub fn get_all(&self) -> Option<Vec<Post>> {
@@ -46,7 +47,7 @@ impl PostStore {
             .get_result(&self.connection);
         match result {
             Result::Ok(p) => Ok(p),
-            Result::Err(e) => Err("Error inserting data".to_string())
+            Result::Err(_) => Err("Error inserting data".to_string())
         }
     }
 }
