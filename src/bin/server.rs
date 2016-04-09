@@ -14,6 +14,7 @@ use rustc_serialize::json::{self};
 use std::str::FromStr;
 use nickel::extensions::Redirect;
 use time::PreciseTime;
+use std::net::Ipv4Addr;
 
 fn main() {
     let mut server = Nickel::new();
@@ -74,5 +75,8 @@ fn main() {
         format!("[{}]", json_response)
     });
 
-    server.listen("127.0.0.1:6767");
+    let server_port = u16::from_str(config.get("PORT").unwrap()).unwrap();
+    let server_addr = Ipv4Addr::from_str("127.0.0.1").unwrap();
+
+    server.listen((server_addr, server_port));
 }
