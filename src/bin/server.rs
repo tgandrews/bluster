@@ -76,7 +76,7 @@ fn main() {
     });
 
     let server_port = u16::from_str(config.get("PORT").unwrap()).unwrap();
-    let server_addr = Ipv4Addr::from_str("127.0.0.1").unwrap();
+    let server_addr = Ipv4Addr::from_str("0.0.0.0").unwrap();
 
     server.listen((server_addr, server_port));
 }
