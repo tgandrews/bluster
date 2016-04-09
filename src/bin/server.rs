@@ -72,7 +72,7 @@ fn main() {
             });
         let end = PreciseTime::now();
         println!("GET /posts {}ms", start.to(end).num_milliseconds());
-        format!("[{}]", json_response)
+        json_response
     });
 
     let server_port = u16::from_str(config.get("PORT").unwrap()).unwrap();
